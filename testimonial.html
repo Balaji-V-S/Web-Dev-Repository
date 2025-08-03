@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonial Builder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    <style>
+        .card-container {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Submit Your Testimonial</h2>
+        <form id="testimonialForm" class="mb-5 needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="nameInput" class="form-label">Name</label>
+                <input type="text" class="form-control" id="nameInput" placeholder="Enter your name" required>
+                <div class="invalid-feedback">
+                    Please enter your name.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="testimonialInput" class="form-label">Testimonial</label>
+                <textarea class="form-control" id="testimonialInput" rows="4" placeholder="Enter your testimonial here"
+                    required></textarea>
+                <div class="invalid-feedback">
+                    Please enter your testimonial.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Add Testimonial</button>
+        </form>
+
+        <h3 class="mt-5">Customer Testimonials</h3>
+        <div class="row card-container" id="testimonialCards">
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTestimonials();
+
+            const form = document.getElementById('testimonialForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (form.checkValidity()) {
+                    addTestimonial();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+
+            document.getElementById('testimonialCards').addEventListener('click', function (event) {
+                if (event.target.classList.contains('edit-btn')) {
+                    const card = event.target.closest('.card');
+                    const index = card.dataset.index;
+                    editTestimonial(index);
+                } else if (event.target.classList.contains('delete-btn')) {
+                    const card = event.target.closest('.card');
+                    const index = card.dataset.index;
+                    deleteTestimonial(index);
+                }
+            });
+        });
+
+        function renderTestimonials() {
+            const cardsContainer = document.getElementById('testimonialCards');
+            cardsContainer.innerHTML = ''; // Clear existing cards
+
+            let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
+
+            testimonials.forEach((testimonial, index) => {
+                const cardHtml = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100" data-index="${index}">
+                            <div class="card-body">
+                                <p class="card-text">${testimonial.text}</p>
+                                <footer class="blockquote-footer mt-2">${testimonial.name}</footer>
+                            </div>
+                            <div class="card-footer d-flex justify-content-end">
+                                <button class="btn btn-warning btn-sm me-2 edit-btn">Edit</button>
+                                <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cardsContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        function addTestimonial() {
+            const nameInput = document.getElementById('nameInput');
+            const testimonialInput = document.getElementById('testimonialInput');
+
+            const newTestimonial = {
+                name: nameInput.value,
+                text: testimonialInput.value,
+                id: Date.now() // Unique ID for each testimonial
+            };
+
+            let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
+            testimonials.push(newTestimonial);
+            localStorage.setItem('testimonials', JSON.stringify(testimonials));
+
+            document.getElementById('testimonialForm').reset();
+            document.getElementById('testimonialForm').classList.remove('was-validated');
+            renderTestimonials();
+        }
+
+        function editTestimonial(index) {
+            let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
+            const testimonialToEdit = testimonials[index];
+
+            const newName = prompt("Edit Name:", testimonialToEdit.name);
+            const newText = prompt("Edit Testimonial:", testimonialToEdit.text);
+
+            if (newName !== null && newText !== null) {
+                testimonialToEdit.name = newName;
+                testimonialToEdit.text = newText;
+                localStorage.setItem('testimonials', JSON.stringify(testimonials));
+                renderTestimonials();
+            }
+        }
+
+        function deleteTestimonial(index) {
+            if (confirm("Are you sure you want to delete this testimonial?")) {
+                let testimonials = JSON.parse(localStorage.getItem('testimonials')) || [];
+                testimonials.splice(index, 1);
+                localStorage.setItem('testimonials', JSON.stringify(testimonials));
+                renderTestimonials();
+            }
+        }
+    </script>
+</body>
+
+</html>

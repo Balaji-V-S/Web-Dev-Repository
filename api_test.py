@@ -1,6 +1,6 @@
 import requests
 
-api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozMzIsInJvbGUiOiJvcmd1c2VyIiwiZW1haWwiOiJiYWxhamkudnNAcHJvZGFwdC5jb20iLCJ1c2VybmFtZSI6InVzZXJfMDEzMSIsImlhdCI6MTc1NDIwNjQ4NiwiZXhwIjoxNzU0MjEwMDg2fQ.StSICDz0zDMxr_XIkcHFUV5AGkBw4uQYV8e7hhRgmEI"   # Replace with actual OpenAI API key
+api_key = "Your_API_Key"   # Replace with actual OpenAI API key
 url = "https://api.openai.com/v1/chat/completions"
 
 headers = {
